@@ -58,7 +58,7 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
         ``` bash
         echo "alias source_ros='source /opt/ros/melodic/setup.sh'" >> ~/.bashrc
         ```
-    8. Install rosdep (used for installing dependencies)
+    8. Install rosdep (used for installing dependencies).
         ``` bash
         sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential
         ```
@@ -69,4 +69,14 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
     10. Update rosdep for ROS Melodic.
         ``` bash
         rosdep update --rosdistro melodic
+        ```
+    11. Install ROS Melodic Controllers.
+        ``` bash
+        sudo apt-get install ros-melodic-controller-interface  ros-melodic-gazebo-ros-control ros-melodic-joint-state-controller ros-melodic-effort-controllers ros-melodic-joint-trajectory-controller
+        ```
+    12. Update, Upgrade, and Remove Debian Packages.
+        ``` bash
+        sudo apt update # updates the lists of packages available
+        sudo apt upgrade # upgrades / installs new packages
+        sudo apt autoremove # removes non-required packages
         ```
