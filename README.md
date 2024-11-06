@@ -154,3 +154,11 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
                 $ source_ws
                 $ rosrun unitree_legged_real ros_example_walk
                 ```
+            3. If you want to be able to see the commands and states being
+                published in real-time, open a new terminal and input the
+                following commands:
+                ``` bash
+                $ source_ros
+                $ rostopic echo /high_cmd # commands from `B`
+                $ rostopic echo /high_state # current robot state from `A`
+                ```
