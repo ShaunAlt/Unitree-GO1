@@ -17,6 +17,16 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
     3. Run the Ubuntu VM.
     4. Connect the Ubuntu VM to an internet connection.
         1. If at Deakin Uni, you can use the `Guest_WiFi_Deakin` network.
+        2. Connecting to `eduroam`:
+            1. Set "Wi-Fi security" to `WPA & WPA2 Enterprise`.
+            2. Set "Authentication" to `Protected EAP (PEAP)`.
+            3. Leave "Anonymous identity" blank.
+            4. Set "Domain" to `deakin.edu.au`.
+            5. Check the "No CA certificate is required" box.
+            6. Set "PEAP version" to `Automatic`.
+            7. Set "Inner authentication" to `MSCHAPv2`.
+            8. Set "Username" to your Deakin Uni username (e.g. `ashau`).
+            9. Set "Password" to your Deakin Uni password.
     5. Test the internet connection by opening Firefox and attempting to
         load a random page.
 2. Install ROS Melodic.
