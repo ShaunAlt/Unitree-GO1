@@ -60,7 +60,7 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
         ```
     8. Install rosdep (used for installing dependencies)
         ``` bash
-        sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+        sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential
         ```
     9. Initialize rosdep.
         ``` bash
