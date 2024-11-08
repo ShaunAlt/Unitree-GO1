@@ -45,7 +45,7 @@ class ROS_Node(object):
 
     Methods
     -
-    - __init__(name) : `None`
+    - __init__(name, debug=False) : `None`
         - Constructor Method.
         - Used to create a new ROS Node.
     - init(anonymous=False) : `None`
