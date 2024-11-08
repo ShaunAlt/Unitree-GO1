@@ -136,7 +136,7 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
                     ```
                 3. Test Connection:
                     ``` bash
-                    $ ping -c 3 192.168.123.163 # -c 3 means ping 3 times
+                    $ ping -c 3 192.168.123.162 # -c 3 means ping 3 times
                     ```
     <!-- 2. Connect to the Unitree GO1 robot wireless access point. -->
     3. Run a example.
