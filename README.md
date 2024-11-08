@@ -114,7 +114,7 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
         ```
 5. Connect Ubuntu VM to GO1 Robot.
     1. Turn on the robot. This process is shown in this [video](https://www.youtube.com/watch?v=VbabuAhol0E).
-    2. Connect via Ethernet.
+    2. Connect via Ethernet or WiFi.
         1. If you plug in the Ethernet cable, but are unable to connect, try
             the following to fix the issue:
             1. Set Static Port
@@ -138,7 +138,30 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
                     ``` bash
                     $ ping -c 3 192.168.123.162 # -c 3 means ping 3 times
                     ```
-    <!-- 2. Connect to the Unitree GO1 robot wireless access point. -->
+        2. The robot's WiFi connection name will start with `"Unitree_Go"`.
+            1. If you are unable to connect, try the following to fix the
+                issue:
+                1. Get Ethernet Port Name:
+                    ``` bash
+                    $ ifconfig
+                    enp0s25: ...
+                        ...
+                    lo: ...
+                        ...
+                    wlp3so: ... # wlp* means wifi - this is the one we want
+                        ...
+                    ```
+                2. Set static connection:
+                    ``` bash
+                    $ sudo ifconfig wlp3s0 down # replace `wlp3s0` if required
+                    $ sudo ifconfig wlp3s0 192.168.12.1/24
+                    $ sudo ifconfig wlp3s0 up
+                    ```
+                3. Test Connection:
+                    ``` bash
+                    $ ping -c 3 192.168.12.1 # -c 3 means ping 3 times
+                    ```
+    2. Connect to the Unitree GO1 robot wireless access point.
     3. Run a example.
         1. Open up 2 terminals (`A` and `B`).
             1. In `A`, input the following commands:
