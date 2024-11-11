@@ -280,3 +280,58 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
     ``` bash
     $ ros2 topic pub -r 10 /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
     ```
+12. Control using Teleop (in new terminal, whilst driver is running).
+    ``` bash
+    $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
+    ```
+
+## Controlling LEDs
+1. Sign in to Unitree GO1 Main Controller.
+    ``` bash
+    $ ssh unitree@192.168.123.13
+    123
+    ```
+2. Locate Light SDK.
+    ``` bash
+    cd Unitree/sdk/faceLightSDK_Nano
+    ```
+3. Build the SDK.
+    ``` bash
+    mkdir build
+    cd build
+    cmake ..
+    make
+    ```
+4. Use (this will rotate through pre-defined colours)
+    ``` bash
+    ./../bin/faceLightClient
+    ```
+
+## Reading Camera Data
+1. Connect to a single camera.
+    1. Install GLUT.
+        ``` bash
+        sudo apt install freeglut3-dev
+        ```
+    2. Create a new workspace, clone the Camera SDK, and build.
+        ``` bash
+        $ mkdir ~/camera_sdk
+        $ cd ~/camera_sdk
+        $ git clone https://github.com/unitreerobotics/UnitreecameraSDK
+        $ cd UnitreecameraSDK
+        $ mkdir build
+        $ cd build
+        $ cmake ..
+        $ make
+        ```
+    4. Login to Main GO1 Controller.
+        ``` bash
+        $ ssh unitree@192.168.123.13
+        >>> 123
+
+        $ cd Unitree/sdk/
+    3. Get Camera Raw Frame.
+        ``` bash
+        $ cd ~/camera_sdk/UnitreecameraSDK
+        ./bins/example_getRawFrame
+        ```
