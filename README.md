@@ -278,15 +278,5 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
     ```
 11. Send a Command Velocity (in new terminal, whilst driver is running).
     ``` bash
-    $ ros2 topic pub -r 10 /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.1, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
+    $ ros2 topic pub -r 10 /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
     ```
-12. I'm not sure why, but if you want to send a new Command Velocity, you need
-    to make the robot stand first.
-    1. This command makes the robot go prone.
-        ``` bash
-        $ ros2 topic pub --once /stand_down std_msgs/msg/Empty
-        ```
-    2. This command makes the robot stand.
-        ``` bash
-        $ ros2 topic pub --once /stand_up std_msgs/msg/Empty
-        ```
