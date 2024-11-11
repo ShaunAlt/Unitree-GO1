@@ -4,3 +4,6 @@
 [submodule "unitree_ros"]
 	path = unitree_ros
 	url = https://github.com/snt-arg/unitree_ros
+[submodule "UnitreecameraSDK"]
+	path = UnitreecameraSDK
+	url = https://github.com/unitreerobotics/UnitreecameraSDK
