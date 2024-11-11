@@ -141,7 +141,7 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
         2. The robot's WiFi connection name will start with `"Unitree_Go"`.
             1. If you are unable to connect, try the following to fix the
                 issue:
-                1. Get Ethernet Port Name:
+                1. Get WiFi Port Name:
                     ``` bash
                     $ ifconfig
                     enp0s25: ...
@@ -151,7 +151,19 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
                     wlp3so: ... # wlp* means wifi - this is the one we want
                         ...
                     ```
-                2. Set static connection:
+                <!-- 2. Open the Network Interfaces File
+                    ``` bash
+                    $ sudo nano /etc/network/interfaces
+                    ```
+                3. Add the following lines to the bottom of the file:
+                    ``` bash
+                    auto wlp3s0
+                    iface wlp3s0 inet dhcp
+                        wpa-ssid "Unitree_Go394321A" # replace with your network name
+                        wpa-psk "00000000"
+                    ```
+                4. Restart your Ubuntu VM. -->
+                <!-- 2. Set static connection:
                     ``` bash
                     $ sudo ifconfig wlp3s0 down # replace `wlp3s0` if required
                     $ sudo ifconfig wlp3s0 192.168.12.1/24
@@ -160,8 +172,13 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
                 3. Test Connection:
                     ``` bash
                     $ ping -c 3 192.168.12.1 # -c 3 means ping 3 times
-                    ```
+                    ``` -->
     2. Connect to the Unitree GO1 robot wireless access point.
+    3. Test Wireless Connection by trying to access the Robot.
+        ``` bash
+        ssh pi@192.168.12.1
+        123
+        ```
     3. Run a example.
         1. Open up 2 terminals (`A` and `B`).
             1. In `A`, input the following commands:
@@ -185,3 +202,91 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
                 $ rostopic echo /high_cmd # commands from `B`
                 $ rostopic echo /high_state # current robot state from `A`
                 ```
+
+
+## Using SNT-ARG Repo
+1. Open the [snt-arg unitree_ros repo](https://github.com/snt-arg/unitree_ros).
+2. Create an [Ubuntu 22.04 Server VM](https://cdimage.ubuntu.com/releases/jammy/release/).
+3. Install Ubuntu Desktop.
+    ``` bash
+    $ sudo apt install ubuntu-desktop
+    $ sudo reboot
+    ```
+4. Install ROS2 Iron.
+    1. Setup the System + Enable Ubuntu Universe.
+        ``` bash
+        $ sudo apt update
+        $ sudo apt install software-properties-common
+        $ sudo add-apt-repository universe
+        ```
+    2. Add ROS2 GPG Key.
+        ``` bash
+        $ sudo apt update
+        $ sudo apt install curl -y
+        $ sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+        ```
+    3. Add Repository to Sources List.
+        ``` bash
+        $ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+        ```
+    4. Install ROS2 Development Tools
+        ``` bash
+        $ sudo apt update
+        $ sudo apt install ros-dev-tools
+        ```
+    5. Install ROS2 Iron
+        ``` bash
+        $ sudo apt update
+        $ sudo apt upgrade
+        $ sudo apt install ros-iron-desktop
+        ```
+    6. Add aliases to simplify sourcing ROS2 Iron in the future.
+        ``` bash
+        $ echo "alias source_ros2='source /opt/ros/iron/setup.sh'" >> ~/.bashrc
+        $ echo "alias source_ws2='source install/setup.sh'" >> ~/.bashrc
+        ```
+    7. Restart Ubuntu.
+        ``` bash
+        $ sudo reboot
+        ```
+5. Install Unitree ROS.
+    ``` bash
+    $ sudo apt install ros-iron-unitree-ros
+    ```
+6. Create a Workspace for this Repo.
+    ``` bash
+    $ mkdir -p ~/unitree_ws/src
+    $ cd ~/unitree_ws/src
+    $ git clone --recurse-submodules https://github.com/snt-arg/unitree_ros.git
+    ```
+7. Build the Workspace for this Repo.
+    ``` bash
+    $ cd ~/unitree_ws
+    $ source_ros2 # source /opt/ros/iron/setup.sh
+    $ colcon build --symlink-install
+    $ source_ws2 # source install/setup.sh
+    ```
+8. Connect to the GO1 robot over WiFi + test using the `ssh` command.
+9. Launch the driver.
+    ``` bash
+    ros2 launch unitree_ros unitree_driver_launch.py wifi:=true
+    ```
+10. View the driver topics (in new terminal, whilst driver is running).
+    ``` bash
+    $ source_ros2
+    $ ros2 topic list
+    ```
+11. Send a Command Velocity (in new terminal, whilst driver is running).
+    ``` bash
+    $ ros2 topic pub -r 10 /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.1, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
+    ```
+12. I'm not sure why, but if you want to send a new Command Velocity, you need
+    to make the robot stand first.
+    1. This command makes the robot go prone.
+        ``` bash
+        $ ros2 topic pub --once /stand_down std_msgs/msg/Empty
+        ```
+    2. This command makes the robot stand.
+        ``` bash
+        $ ros2 topic pub --once /stand_up std_msgs/msg/Empty
+        ```
