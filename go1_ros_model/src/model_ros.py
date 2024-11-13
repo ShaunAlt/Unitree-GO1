@@ -270,7 +270,6 @@ class ROS_Publisher(rospy.Publisher):
     # Constructor
     def __init__(
             self,
-            *
             name: str,
             data_class: Any,
             queue_size: int = 10,
@@ -353,7 +352,6 @@ class ROS_Subscriber(rospy.Subscriber):
     # Constructor
     def __init__(
             self,
-            *
             name: str,
             data_class: Any,
             callback: Any = None,
