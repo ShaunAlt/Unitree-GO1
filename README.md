@@ -7,6 +7,16 @@ Unitree GO1 Robot Connection + Control Project
     - [Ubuntu 18.04 (AMD)](#ubuntu-1804-amd)
     - [Ubuntu 20.04 (ARM)](#ubuntu-2004-arm)
     - [Ubuntu 22.04 (ARM)](#ubuntu-2204-arm)
+- [Connecting to Eduroam](#connecting-to-eduroam)
+- [Installing ROS](#installing-ros)
+    - [ROS1 Melodic](#ros1-melodic)
+    - [ROS1 Noetic](#ros1-noetic)
+    - [ROS2 Humble](#ros2-humble)
+    - [ROS2 Iron](#ros2-iron)
+- [Connecting to GO1 Robot](#connecting-to-go1-robot)
+    - [Turning on the Robot](#turning-on-the-robot)
+    - [Ethernet Connection](#ethernet-connection)
+    - [WiFi Connection](#wifi-connection)
 
 ## Contributors
 This project was created by Shaun Altmann (shaun.altmann@deakin.edu.au).
@@ -17,6 +27,10 @@ This project was created by Shaun Altmann (shaun.altmann@deakin.edu.au).
     which can be found [here](https://releases.ubuntu.com/18.04/).
 2. Create the Ubuntu VM using the 18.04 image.
 3. Run the Ubuntu VM.
+4. Open the Terminal and install Net Tools + IP Config.
+    ``` bash
+    $ sudo apt install net-tools iputils-ping
+    ```
 
 ### Ubuntu 20.04 (ARM)
 1. Install the [Ubuntu 20.04 64-bit ARM Server Image](https://cdimage.ubuntu.com/releases/focal/release/ubuntu-20.04.5-live-server-arm64.iso),
@@ -27,6 +41,10 @@ This project was created by Shaun Altmann (shaun.altmann@deakin.edu.au).
     ``` bash
     $ sudo apt install ubuntu-desktop
     $ sudo reboot
+    ```
+5. Open the Terminal and install Net Tools + IP Config.
+    ``` bash
+    $ sudo apt install net-tools iputils-ping
     ```
 
 ### Ubuntu 22.04 (ARM)
@@ -39,80 +57,345 @@ This project was created by Shaun Altmann (shaun.altmann@deakin.edu.au).
     $ sudo apt install ubuntu-desktop
     $ sudo reboot
     ```
+5. Open the Terminal and install Net Tools + IP Config.
+    ``` bash
+    $ sudo apt install net-tools iputils-ping
+    ```
+
+## Connecting to Eduroam
+Use the following settings to connect to eduroam.
+| Setting | Value |
+| :--- | ---: |
+| Wi-Fi security | WPA & WPA2 Enterprise |
+| Authentication | Protected EAP (PEAP) |
+| Anonymous identity | _\*\*leave blank\*\*_ |
+| Domain | deakin.edu.au |
+| No CA certificate is required | <ul><li>- [x] </ul> |
+| PEAP version | Automatic |
+| Inner authentication | MSCHAPv2 |
+| Username | _\*\*your deakin uni login username\*\*_ |
+| Password | _\*\*your deakin uni login password\*\*_ |
+
+## Installing ROS
+| ROS Version | Ubuntu Requirement |
+| :--- | ---: |
+| ROS1 Melodic | 18.04 (Bionic) |
+| ROS1 Noetic | 20.04 (Focal) |
+| ROS2 Humble | 22.04 (Jammy) |
+| ROS2 Iron | 22.04 (Jammy) |
+
+### ROS1 Melodic
+The steps for this process can be found [here](https://wiki.ros.org/melodic/Installation/Ubuntu).
+1. Setup the computer to accept software from packages.ros.org.
+    ``` bash
+    $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+    ```
+2. Install Curl.
+    ``` bash
+    $ sudo apt install curl
+    ```
+3. Setup ROS Keys.
+    ``` bash
+    $ curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+    ```
+4. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+5. Install ROS Melodic Desktop Full.
+    ``` bash
+    $ sudo apt install ros-melodic-desktop-full
+    ```
+6. Source ROS Melodic.
+    ``` bash
+    $ source /opt/ros/melodic/setup.sh
+    ```
+7. Add aliases to simplify sourcing ROS Melodic in the future.
+    ``` bash
+    $ echo "alias source_ros='source /opt/ros/melodic/setup.sh'" >> ~/.bashrc
+    $ echo "alias source_ws='source devel/setup.sh'" >> ~/.bashrc
+    ```
+8. Install rosdep (used for installing dependencies).
+    ``` bash
+    $ sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential
+    ```
+9. Initialize rosdep.
+    ``` bash
+    $ sudo rosdep init
+    ```
+10. Update rosdep for ROS Melodic.
+    ``` bash
+    $ rosdep update --rosdistro melodic
+    ```
+11. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+12. Upgrade Debian Packages.
+    ``` bash
+    $ sudo apt upgrade
+    ```
+13. Remove Non-Required Debian Packages.
+    ``` bash
+    $ sudo apt autoremove
+    ```
+14. Reset your VM.
+    ``` bash
+    $ sudo reboot
+    ```
+
+### ROS1 Noetic
+The steps for this process can be found [here](https://wiki.ros.org/noetic/Installation/Ubuntu).
+1. Setup the computer to accept software from packages.ros.org.
+    ``` bash
+    $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+    ```
+2. Install Curl.
+    ``` bash
+    $ sudo apt install curl
+    ```
+3. Setup ROS Keys.
+    ``` bash
+    $ curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+    ```
+4. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+5. Install ROS Noetic Desktop Full.
+    ``` bash
+    $ sudo apt install ros-noetic-desktop-full
+    ```
+6. Source ROS Noetic.
+    ``` bash
+    $ source /opt/ros/noetic/setup.sh
+    ```
+7. Add aliases to simplify sourcing ROS Noetic in the future.
+    ``` bash
+    $ echo "alias source_ros='source /opt/ros/noetic/setup.sh'" >> ~/.bashrc
+    $ echo "alias source_ws='source devel/setup.sh'" >> ~/.bashrc
+    ```
+8. Install rosdep (used for installing dependencies).
+    ``` bash
+    $ sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
+    ```
+9. Initialize rosdep.
+    ``` bash
+    $ sudo rosdep init
+    ```
+10. Update rosdep for ROS Noetic.
+    ``` bash
+    $ rosdep update --rosdistro noetic
+    ```
+11. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+12. Upgrade Debian Packages.
+    ``` bash
+    $ sudo apt upgrade
+    ```
+13. Remove Non-Required Debian Packages.
+    ``` bash
+    $ sudo apt autoremove
+    ```
+14. Reset your VM.
+    ``` bash
+    $ sudo reboot
+    ```
+
+### ROS2 Humble
+The steps for this process can be found [here](https://docs.ros.org/en/humble/Installation/Ubuntu-Install-Debs.html).
+1. Ensure that the [Ubuntu Universe Repository](https://help.ubuntu.com/community/Repositories/Ubuntu) is enabled.
+    ``` bash
+    $ sudo apt install software-properties-common
+    $ sudo add-apt-repository universe
+    ```
+2. Install Curl.
+    ``` bash
+    $ sudo apt install curl -y
+    ```
+3. Setup ROS GPG Key.
+    ``` bash
+    $ sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+    ```
+4. Add the repository to your sources list.
+    ``` bash
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+    ```
+5. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+6. Install ROS Development Tools.
+    ``` bash
+    $ sudo apt install ros-dev-tools
+    ```
+7. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+8. Upgrade Debian Packages.
+    ``` bash
+    $ sudo apt upgrade
+    ```
+9. Install ROS Humble Desktop Full.
+    ``` bash
+    $ sudo apt install ros-humble-desktop
+    ```
+10. Add aliases to simplify sourcing ROS2 Humble in the future.
+    ``` bash
+    $ echo "alias source_ros2='source /opt/ros/humble/setup.sh'" >> ~/.bashrc
+    $ echo "alias source_ws2='source install/setup.sh'" >> ~/.bashrc
+    ```
+11. Install rosdep (used for installing dependencies).
+    ``` bash
+    $ sudo apt install python3-rosdep
+    ```
+12. Initialize rosdep.
+    ``` bash
+    $ sudo rosdep init
+    ```
+13. Update rosdep for ROS Humble.
+    ``` bash
+    $ rosdep update --rosdistro humble
+    ```
+14. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+15. Upgrade Debian Packages.
+    ``` bash
+    $ sudo apt upgrade
+    ```
+16. Remove Non-Required Debian Packages.
+    ``` bash
+    $ sudo apt autoremove
+    ```
+17. Reset your VM.
+    ``` bash
+    $ sudo reboot
+    ```
+
+### ROS2 Iron
+The steps for this process can be found [here](https://docs.ros.org/en/iron/Installation/Ubuntu-Install-Debs.html).
+1. Ensure that the [Ubuntu Universe Repository](https://help.ubuntu.com/community/Repositories/Ubuntu) is enabled.
+    ``` bash
+    $ sudo apt install software-properties-common
+    $ sudo add-apt-repository universe
+    ```
+2. Install Curl.
+    ``` bash
+    $ sudo apt install curl -y
+    ```
+3. Setup ROS GPG Key.
+    ``` bash
+    $ sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+    ```
+4. Add the repository to your sources list.
+    ``` bash
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+    ```
+5. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+6. Install ROS Development Tools.
+    ``` bash
+    $ sudo apt install ros-dev-tools
+    ```
+7. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+8. Upgrade Debian Packages.
+    ``` bash
+    $ sudo apt upgrade
+    ```
+9. Install ROS Iron Desktop Full.
+    ``` bash
+    $ sudo apt install ros-iron-desktop
+    ```
+10. Add aliases to simplify sourcing ROS2 Iron in the future.
+    ``` bash
+    $ echo "alias source_ros2='source /opt/ros/iron/setup.sh'" >> ~/.bashrc
+    $ echo "alias source_ws2='source install/setup.sh'" >> ~/.bashrc
+    ```
+11. Install rosdep (used for installing dependencies).
+    ``` bash
+    $ sudo apt install python3-rosdep
+    ```
+12. Initialize rosdep.
+    ``` bash
+    $ sudo rosdep init
+    ```
+13. Update rosdep for ROS Iron.
+    ``` bash
+    $ rosdep update --rosdistro iron
+    ```
+14. Update Debian Packages.
+    ``` bash
+    $ sudo apt update
+    ```
+15. Upgrade Debian Packages.
+    ``` bash
+    $ sudo apt upgrade
+    ```
+16. Remove Non-Required Debian Packages.
+    ``` bash
+    $ sudo apt autoremove
+    ```
+17. Reset your VM.
+    ``` bash
+    $ sudo reboot
+    ```
+
+## Connecting to GO1 Robot
+### Turning on the Robot
+The process to turn on the GO1 Robot can be found in this [video](https://www.youtube.com/watch?v=VbabuAhol0E).
+
+### Ethernet Connection
+1. Turn on the robot.
+2. Plug the ethernet cable into the port on your device, and on the back of the
+    GO1 robot.
+3. Open up Terminal on your device.
+4. Get the Ethernet Port Name on your device.
+    ``` bash
+    $ ifconfig
+    enp0s25: ... # en* means ethernet - this is the port name we want
+    ...
+    ```
+5. Set a static connection to the robot.
+    ``` bash
+    $ sudo ifconfig enp0s25 down # replace with your ethernet port name
+    $ sudo ifconfig enp0s25 192.168.123.162/24
+    $ sudo ifconfig enp0s25 up
+    ```
+6. Ping to test connection.
+    ``` bash
+    $ ping -c 3 192.168.123.162
+    ```
+
+### WiFi Connection
+1. Turn on the robot.
+2. The robot's WiFi connection name will start with `"Unitree_Go"`.
+3. The robot's WiFi Password is: `00000000` (8 zeros).
+4. SSH to test connection.
+    ``` bash
+    $ ssh pi@192.168.12.1
+    123
+    ```
 
 ## Connecting to GO1 Robot
 The following steps will allow you to connect to the Unitree GO1 Robot:
 1. Create new Ubuntu 18.04 VM.
-    1. See [Ubuntu 18.04](#ubuntu-1804).
-    4. Connect the Ubuntu VM to an internet connection.
-        1. If at Deakin Uni, you can use the `Guest_WiFi_Deakin` network.
-        2. Connecting to `eduroam`:
-            1. Set "Wi-Fi security" to `WPA & WPA2 Enterprise`.
-            2. Set "Authentication" to `Protected EAP (PEAP)`.
-            3. Leave "Anonymous identity" blank.
-            4. Set "Domain" to `deakin.edu.au`.
-            5. Check the "No CA certificate is required" box.
-            6. Set "PEAP version" to `Automatic`.
-            7. Set "Inner authentication" to `MSCHAPv2`.
-            8. Set "Username" to your Deakin Uni username (e.g. `ashau`).
-            9. Set "Password" to your Deakin Uni password.
-    5. Test the internet connection by opening Firefox and attempting to
-        load a random page.
-    6. Install Network Tools + Ping Debugger in Terminal.
-        ``` bash
-        $ sudo apt install net-tools iputils-ping
-        ```
+    1. See [Ubuntu 18.04 (AMD)](#ubuntu-1804-amd).
+    2. See [Connecting to Eduroam](#connecting-to-eduroam).
 2. Install ROS Melodic.
-    1. Setup the computer to accept software from packages.ros.org.
-        ``` bash
-        $ sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-        ```
-    2. Install Curl.
-        ``` bash
-        $ sudo apt install curl
-        ```
-    3. Setup ROS Keys.
-        ``` bash
-        $ curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-        ```
-    4. Update Debian Packages.
-        ``` bash
-        $ sudo apt update
-        ```
-    5. Install ROS Melodic Desktop Full.
-        ``` bash
-        $ sudo apt install ros-melodic-desktop-full
-        ```
-    6. Source ROS Melodic.
-        ``` bash
-        $ source /opt/ros/melodic/setup.sh
-        ```
-    7. Add aliases to simplify sourcing ROS Melodic in the future.
-        ``` bash
-        $ echo "alias source_ros='source /opt/ros/melodic/setup.sh'" >> ~/.bashrc
-        $ echo "alias source_ws='source devel/setup.sh'" >> ~/.bashrc
-        ```
-    8. Install rosdep (used for installing dependencies).
-        ``` bash
-        $ sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential
-        ```
-    9. Initialize rosdep.
-        ``` bash
-        $ sudo rosdep init
-        ```
-    10. Update rosdep for ROS Melodic.
-        ``` bash
-        $ rosdep update --rosdistro melodic
-        ```
+    1. See [ROS1 Melodic](#ros1-melodic)
     11. Install ROS Melodic Controllers.
         ``` bash
         $ sudo apt-get install ros-melodic-controller-interface  ros-melodic-gazebo-ros-control ros-melodic-joint-state-controller ros-melodic-effort-controllers ros-melodic-joint-trajectory-controller
-        ```
-    12. Update, Upgrade, and Remove Debian Packages.
-        ``` bash
-        $ sudo apt update # updates the lists of packages available
-        $ sudo apt upgrade # upgrades / installs new packages
-        $ sudo apt autoremove # removes non-required packages
         ```
 3. Restart the Ubuntu VM.
 4. Create a ROS workspace for the GO1 robot.
@@ -142,72 +425,10 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
         $ catkin_make
         ```
 5. Connect Ubuntu VM to GO1 Robot.
-    1. Turn on the robot. This process is shown in this [video](https://www.youtube.com/watch?v=VbabuAhol0E).
+    1. See [Turning on the Robot](#turning-on-the-robot).
     2. Connect via Ethernet or WiFi.
-        1. If you plug in the Ethernet cable, but are unable to connect, try
-            the following to fix the issue:
-            1. Set Static Port
-                1. Get Ethernet Port Name:
-                    ``` bash
-                    $ ifconfig
-                    enp0s25: ... # en* means ethernet - this is the one we want
-                        ...
-                    lo: ...
-                        ...
-                    wlp3so: ...
-                        ...
-                    ```
-                2. Set static connection:
-                    ``` bash
-                    $ sudo ifconfig enp0s25 down # replace `enp0s25` if required
-                    $ sudo ifconfig enp0s25 192.168.123.162/24
-                    $ sudo ifconfig enp0s25 up
-                    ```
-                3. Test Connection:
-                    ``` bash
-                    $ ping -c 3 192.168.123.162 # -c 3 means ping 3 times
-                    ```
-        2. The robot's WiFi connection name will start with `"Unitree_Go"`.
-            1. If you are unable to connect, try the following to fix the
-                issue:
-                1. Get WiFi Port Name:
-                    ``` bash
-                    $ ifconfig
-                    enp0s25: ...
-                        ...
-                    lo: ...
-                        ...
-                    wlp3so: ... # wlp* means wifi - this is the one we want
-                        ...
-                    ```
-                <!-- 2. Open the Network Interfaces File
-                    ``` bash
-                    $ sudo nano /etc/network/interfaces
-                    ```
-                3. Add the following lines to the bottom of the file:
-                    ``` bash
-                    auto wlp3s0
-                    iface wlp3s0 inet dhcp
-                        wpa-ssid "Unitree_Go394321A" # replace with your network name
-                        wpa-psk "00000000"
-                    ```
-                4. Restart your Ubuntu VM. -->
-                <!-- 2. Set static connection:
-                    ``` bash
-                    $ sudo ifconfig wlp3s0 down # replace `wlp3s0` if required
-                    $ sudo ifconfig wlp3s0 192.168.12.1/24
-                    $ sudo ifconfig wlp3s0 up
-                    ```
-                3. Test Connection:
-                    ``` bash
-                    $ ping -c 3 192.168.12.1 # -c 3 means ping 3 times
-                    ``` -->
-    2. Connect to the Unitree GO1 robot wireless access point.
-    3. Test Wireless Connection by trying to access the Robot.
-        ``` bash
-        ssh pi@192.168.12.1
-        123
-        ```
+        1. See [Ethernet Connection](#ethernet-connection).
+        2. See [WiFi Connection](#wifi-connection).
     3. Run a example.
         1. Open up 2 terminals (`A` and `B`).
             1. In `A`, input the following commands:
@@ -235,12 +456,7 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
 
 ## Using SNT-ARG Repo
 1. Open the [snt-arg unitree_ros repo](https://github.com/snt-arg/unitree_ros).
-2. Create an [Ubuntu 22.04 Server VM](https://cdimage.ubuntu.com/releases/jammy/release/).
-3. Install Ubuntu Desktop.
-    ``` bash
-    $ sudo apt install ubuntu-desktop
-    $ sudo reboot
-    ```
+2. Create an [Ubuntu 22.04 (ARM) VM](#ubuntu-2204-arm).
 4. Install ROS2 Iron.
     1. Setup the System + Enable Ubuntu Universe.
         ``` bash
