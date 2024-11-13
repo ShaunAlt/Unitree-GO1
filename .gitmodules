@@ -1,9 +1,15 @@
-[submodule "submodules/UnitreecameraSDK"]
-	path = submodules/UnitreecameraSDK
-	url = https://github.com/unitreerobotics/UnitreecameraSDK
-[submodule "submodules/unitree_ros"]
-	path = submodules/unitree_ros
-	url = https://github.com/snt-arg/unitree_ros
-[submodule "submodules/unitree_ros_to_real"]
-	path = submodules/unitree_ros_to_real
+[submodule "submodules/unitreerobotics/unitree_ros"]
+	path = submodules/unitreerobotics/unitree_ros
+	url = https://github.com/unitreerobotics/unitree_ros
+[submodule "submodules/unitreerobotics/unitree_ros_to_real"]
+	path = submodules/unitreerobotics/unitree_ros_to_real
 	url = https://github.com/unitreerobotics/unitree_ros_to_real
+[submodule "submodules/unitreerobotics/unitree_legged_sdk"]
+	path = submodules/unitreerobotics/unitree_legged_sdk
+	url = https://github.com/unitreerobotics/unitree_legged_sdk
+[submodule "submodules/snt-arg/unitree_ros"]
+	path = submodules/snt-arg/unitree_ros
+	url = https://github.com/snt-arg/unitree_ros
+[submodule "submodules/unitreerobotics/UnitreecameraSDK"]
+	path = submodules/unitreerobotics/UnitreecameraSDK
+	url = https://github.com/unitreerobotics/UnitreecameraSDK
