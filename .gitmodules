@@ -7,3 +7,12 @@
 [submodule "UnitreecameraSDK"]
 	path = UnitreecameraSDK
 	url = https://github.com/unitreerobotics/UnitreecameraSDK
+[submodule "submodules/UnitreecameraSDK"]
+	path = submodules/UnitreecameraSDK
+	url = https://github.com/unitreerobotics/UnitreecameraSDK
+[submodule "submodules/unitree_ros"]
+	path = submodules/unitree_ros
+	url = https://github.com/snt-arg/unitree_ros
+[submodule "submodules/unitree_ros_to_real"]
+	path = submodules/unitree_ros_to_real
+	url = https://github.com/unitreerobotics/unitree_ros_to_real
