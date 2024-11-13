@@ -17,9 +17,30 @@ Unitree GO1 Robot Connection + Control Project
     - [Turning on the Robot](#turning-on-the-robot)
     - [Ethernet Connection](#ethernet-connection)
     - [WiFi Connection](#wifi-connection)
+- [Controlling the GO1 Robot](#controlling-the-go1-robot)
+    - [Controlling Movement in ROS1](#controlling-movement-in-ros1)
+    - [Controlling Movement in ROS2](#controlling-movement-in-ros2)
+    - [Controlling LEDs](#controlling-leds)
+    - [Controlling Cameras](#controlling-cameras)
 
 ## Contributors
 This project was created by Shaun Altmann (shaun.altmann@deakin.edu.au).
+
+## Dependencies
+- Git Submodules:
+    - [snt-arg/unitree_ros](https://github.com/snt-arg/unitree_ros)
+    - [unitreerobotics/unitree_legged_sdk](https://github.com/unitreerobotics/unitree_legged_sdk)
+    - [unitreerobotics/unitree_ros](https://github.com/unitreerobotics/unitree_ros)
+    - [unitreerobotics/unitree_ros_to_real](https://github.com/unitreerobotics/unitree_ros_to_real)
+    - [unitreerobotics/UnitreecameraSDK](https://github.com/unitreerobotics/UnitreecameraSDK)
+- Previous GO1 Robot Projects:
+    - [alkatra/PLT_Fusion](https://github.com/alkatra/PTL_Fusion)
+    - [thieulong/Unitree-Go1-EDU](https://github.com/thieulong/Unitree-Go1-EDU)
+- [Go1 Manual](https://www.docs.quadruped.de/projects/go1/html/operation.html)
+- [Go1 Slack GitHub](https://github.com/MAVProxyUser/YushuTechUnitreeGo1)
+- [Go1 Description GitHub](https://github.com/navneethooda/go1_description)
+- [LiDAR Unitree Support](https://support.unitree.com/home/en/developer/LiDAR_service)
+- [Camera Tutorial](https://www.youtube.com/watch?v=nafv21HeeEM)
 
 ## Creating an Ubuntu VM
 ### Ubuntu 18.04 (AMD)
@@ -386,151 +407,136 @@ The process to turn on the GO1 Robot can be found in this [video](https://www.yo
     123
     ```
 
-## Connecting to GO1 Robot
-The following steps will allow you to connect to the Unitree GO1 Robot:
-1. Create new Ubuntu 18.04 VM.
-    1. See [Ubuntu 18.04 (AMD)](#ubuntu-1804-amd).
-    2. See [Connecting to Eduroam](#connecting-to-eduroam).
-2. Install ROS Melodic.
-    1. See [ROS1 Melodic](#ros1-melodic)
-    11. Install ROS Melodic Controllers.
-        ``` bash
-        $ sudo apt-get install ros-melodic-controller-interface  ros-melodic-gazebo-ros-control ros-melodic-joint-state-controller ros-melodic-effort-controllers ros-melodic-joint-trajectory-controller
-        ```
-3. Restart the Ubuntu VM.
-4. Create a ROS workspace for the GO1 robot.
-    1. Open a new terminal.
-    2. Create a new ROS workspace.
-        ``` bash
-        $ mkdir -p ~/ros_ws/src
-        $ cd ~/ros_ws/src
-        ```
-    3. Source ROS.
-        ``` bash
-        $ source_ros # already defined this alias previously
-        ```
-    4. Install the Unitree GO1 GIT repositories.
-        ``` bash
-        $ git clone https://github.com/unitreerobotics/unitree_ros -b master
-        $ git clone https://github.com/unitreerobotics/unitree_ros_to_real -b master
-        $ git clone https://github.com/unitreerobotics/unitree_legged_sdk -b go1
-        ```
-    5. Install project dependencies.
-        ``` bash
-        $ cd .. # after this, you should be in the `ros_ws` directory
-        $ rosdep install --from-paths src -y --ignore-src --rosdistro melodic
-        ```
-    6. Build the project.
-        ``` bash
-        $ catkin_make
-        ```
-5. Connect Ubuntu VM to GO1 Robot.
-    1. See [Turning on the Robot](#turning-on-the-robot).
-    2. Connect via Ethernet or WiFi.
-        1. See [Ethernet Connection](#ethernet-connection).
-        2. See [WiFi Connection](#wifi-connection).
-    3. Run a example.
-        1. Open up 2 terminals (`A` and `B`).
-            1. In `A`, input the following commands:
-                ``` bash
-                $ cd ~/ros_ws
-                $ source_ws
-                $ roslaunch unitree_legged_real real.launch ctrl_level:=highlevel
-                ```
-            2. In `B`, input the following commands (after having run all of
-                the `A` commands):
-                ``` bash
-                $ cd ~/ros_ws
-                $ source_ws
-                $ rosrun unitree_legged_real ros_example_walk
-                ```
-            3. If you want to be able to see the commands and states being
-                published in real-time, open a new terminal and input the
-                following commands:
-                ``` bash
-                $ source_ros
-                $ rostopic echo /high_cmd # commands from `B`
-                $ rostopic echo /high_state # current robot state from `A`
-                ```
+## Controlling the GO1 Robot
+### Controlling Movement in ROS1
+Dependencies:
+- [unitreerobotics/unitree_ros](submodules/unitreerobotics/unitree_ros/)
+- [unitreerobotics/unitree_ros_to_real](submodules/unitreerobotics/unitree_ros_to_real/)
+- [unitreerobotics/unitree_legged_sdk](submodules/unitreerobotics/unitree_legged_sdk/)
 
+Steps:
+1. Create an [Ubuntu 18.04 (AMD)](#ubuntu-1804-amd) VM.
+2. Install [ROS1 Melodic](#ros1-melodic).
+3. Install ROS Melodic Controllers.
+    ``` bash
+    $ sudo apt install ros-melodic-controller-interface
+    $ sudo apt install ros-melodic-gazebo-ros-control
+    $ sudo apt install ros-melodic-joint-state-controller
+    $ sudo apt install ros-melodic-effort-controllers
+    $ sudo apt install ros-melodic-joint-tragectory-controller
+    ```
+4. Create a ROS Workspace.
+    ``` bash
+    $ source_ros
+    $ mkdir -p ~/ros_ws/src
+    $ cd ~/ros_ws/src
+    ```
+5. Install the Unitree GO1 Repositories.
+    ``` bash
+    $ git clone https://github.com/unitreerobotics/unitree_ros -b master
+    $ git clone https://github.com/unitreerobotics/unitree_ros_to_real -b master
+    $ git clone https://github.com/unitreerobotics/unitree_legged_sdk -b go1
+    ```
+6. Install Project Dependencies.
+    ``` bash
+    $ cd ~/ros_ws
+    $ rosdep install --from-paths src -y --ignore-src --rosdistro melodic
+    ```
+7. Build the Workspace.
+    ``` bash
+    $ catkin_make
+    ```
+8. Connect to the GO1 Robot over [Ethernet](#ethernet-connection).
+9. Run the example walk.
+    1. In one terminal, run the following commands:
+        ``` bash
+        $ cd ~/ros_ws
+        $ source_ws
+        $ roslaunch unitree_legged_real real.launch ctrl_level:=highlevel
+        ```
+    2. Open a new terminal and run the following commands:
+        ``` bash
+        $ cd ~/ros_ws
+        $ source_ws
+        $ rosrun unitree_legged_real ros_example_walk
+        ```
+    3. (Optional) Open a new terminal and run any one of the following commands
+        to view the data being sent (after first using `source_ros`).
+        - View a list of ROS topics.
+            ``` bash
+            $ rostopic list
+            ```
+        - See the high-level commands being sent from the device to the robot.
+            ``` bash
+            $ rostopic echo /high_cmd
+            ```
+        - See the high-level state of the robot being sent to the device.
+            ``` bash
+            $ rostopic echo /high_state
+            ```
 
-## Using SNT-ARG Repo
-1. Open the [snt-arg unitree_ros repo](https://github.com/snt-arg/unitree_ros).
-2. Create an [Ubuntu 22.04 (ARM) VM](#ubuntu-2204-arm).
-4. Install ROS2 Iron.
-    1. Setup the System + Enable Ubuntu Universe.
-        ``` bash
-        $ sudo apt update
-        $ sudo apt install software-properties-common
-        $ sudo add-apt-repository universe
-        ```
-    2. Add ROS2 GPG Key.
-        ``` bash
-        $ sudo apt update
-        $ sudo apt install curl -y
-        $ sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
-        ```
-    3. Add Repository to Sources List.
-        ``` bash
-        $ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
-        ```
-    4. Install ROS2 Development Tools
-        ``` bash
-        $ sudo apt update
-        $ sudo apt install ros-dev-tools
-        ```
-    5. Install ROS2 Iron
-        ``` bash
-        $ sudo apt update
-        $ sudo apt upgrade
-        $ sudo apt install ros-iron-desktop
-        ```
-    6. Add aliases to simplify sourcing ROS2 Iron in the future.
-        ``` bash
-        $ echo "alias source_ros2='source /opt/ros/iron/setup.sh'" >> ~/.bashrc
-        $ echo "alias source_ws2='source install/setup.sh'" >> ~/.bashrc
-        ```
-    7. Restart Ubuntu.
-        ``` bash
-        $ sudo reboot
-        ```
-5. Install Unitree ROS.
+### Controlling Movement in ROS2
+Dependencies:
+- [snt-arg/unitree_ros](submodules/snt-arg/unitree_ros/)
+
+Steps:
+1. Create an [Ubuntu 22.04 (ARM)](#ubuntu-2204-arm) VM.
+2. Install [ROS2 Iron](#ros2-iron).
+3. Install Unitree ROS.
     ``` bash
     $ sudo apt install ros-iron-unitree-ros
     ```
-6. Create a Workspace for this Repo.
-    ``` bash
-    $ mkdir -p ~/unitree_ws/src
-    $ cd ~/unitree_ws/src
-    $ git clone --recurse-submodules https://github.com/snt-arg/unitree_ros.git
-    ```
-7. Build the Workspace for this Repo.
-    ``` bash
-    $ cd ~/unitree_ws
-    $ source_ros2 # source /opt/ros/iron/setup.sh
-    $ colcon build --symlink-install
-    $ source_ws2 # source install/setup.sh
-    ```
-8. Connect to the GO1 robot over WiFi + test using the `ssh` command.
-9. Launch the driver.
-    ``` bash
-    ros2 launch unitree_ros unitree_driver_launch.py wifi:=true
-    ```
-10. View the driver topics (in new terminal, whilst driver is running).
+4. Create a ROS2 Workspace.
     ``` bash
     $ source_ros2
-    $ ros2 topic list
+    $ mkdir -p ~/ros2_ws/src
+    $ cd ~/ros2_ws/src
     ```
-11. Send a Command Velocity (in new terminal, whilst driver is running).
+5. Install the Unitree ROS Repository.
     ``` bash
-    $ ros2 topic pub -r 10 /cmd_vel geometry_msgs/msg/Twist "{linear: {x: 0.5, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}"
+    $ git clone --recurse-submodules https://github.com/snt-arg/unitree_ros.git
     ```
-12. Control using Teleop (in new terminal, whilst driver is running).
+6. Install Project Dependencies.
     ``` bash
-    $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
+    $ cd ~/ros2_ws
+    $ rosdep install --from-paths src -y --ignore-src --rosdistro iron
+7. Build the Workspace.
+    ``` bash
+    $ colcon build --symlink-install
     ```
+8. Connect to the GO1 Robot over [WiFi](#wifi-connection).
+9. Run the Driver with Teleop Keyboard.
+    1. In one terminal, run the following commands:
+        ``` bash
+        $ cd ~/ros2_ws
+        $ source_ws2
+        $ ros2 launch unitree_ros unitree_driver_launch.py wifi:=true
+        ```
+    2. Open a new terminal and run the following commands:
+        ``` bash
+        $ source_ros2
+        $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
+        ```
+    3. (Optional) Open a new terminal and run any one of the following commands
+        to view the data being sent (after first using `source_ros2`).
+        - View a list of ROS2 topics.
+            ``` bash
+            $ ros2 topic list
+            ```
+        - See the command velocities being sent to the robot.
+            ``` bash
+            $ ros2 topic echo /cmd_vel
+            ```
 
-## Controlling LEDs
+### Controlling LEDs
+> [!NOTE]
+> This section currently contains a lot of guess-work. I have not yet managed
+> to get the LED control working, and as such this section contains a list of
+> different things I have tried.
+
+#### Multi-Colour Blinking Face-Lights
+The following steps will make the face lights on the robot flash different
+colours:
 1. Sign in to Unitree GO1 Main Controller.
     ``` bash
     $ ssh unitree@192.168.123.13
@@ -552,108 +558,109 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
     ./../bin/faceLightClient
     ```
 
-## Reading Camera Data
-1. Install Net Tools.
+### Controlling Cameras
+#### Getting Raw Camera Data
+This is not working.
+1. Install GLUT.
     ``` bash
-    sudo apt install net-tools
+    sudo apt install freeglut3-dev
     ```
-1. Download the [Camera Manual](https://www.docs.quadruped.de/projects/go1/html/operation.html).
-2. Get the Head Camera working:
-    1. Create an SDK Working Directory and install from GitHub.
-        ``` bash
-        $ mkdir ~/camera_sdk
-        $ cd ~/camera_sdk
-        $ git clone https://github.com/unitreerobotics/UnitreecameraSDK.git
-        ```
-    2. Use SCP (Secure Copy Protocol) to transfer the camera sdk to the robot.
-        ``` bash
-        $ scp -r UnitreecameraSDK unitree@192.168.123.13:/home/unitree
-        123
-        ```
-    3. SSH into the Robot.
-        ``` bash
-        $ ssh unitree@192.168.123.13
-        123
-        ```
-    4. Stop the Head Camera Processes:
-        ``` bash
-        ps -aux | grep point_cloud_node | awk '{print $2}' | xargs kill -9
-        ps -aux | grep mqttControlNode | awk '{print $2}' | xargs kill -9
-        ```
-    5. Modify `trans_rect_config.yaml`:
-        ``` bash
-        $ cd ~/UnitreecameraSDK
-        $ vim trans_rect_config.yaml
-        ```
-        1. Update the `IpLastSegment.data` Value:
-            - Original: `[ 15. ]`
-            - New: `[ 126. ]` # 13, 100, 255, 252
-        2. Update the `DeviceNode.data` Value:
-            - Original: `[ 0. ]`
-            - New: `[ 1. ]`
-    6. Build the Camera SDK.
-        ``` bash
-        $ mkdir build
-        $ cd build
-        $ cmake ..
-        $ make
-        ```
-    7. Run the Image Transmitter.
-        ``` bash
-        $ cd ..
-        $ ./bins/example_putImagetrans
-        ```
-    8. Open a new Terminal, and go to the original camera SDK.
-        ``` bash
-        $ cd ~/camera_sdk/UnitreecameraSDK # on your machine
-        ```
-    9. Edit the `example_getimagetrans.cc` File.
-        ``` bash
-        $ nano examples/example_getimagetrans.cc
-        ```
-        Update the start of the `main` function so it looks like this:
-        ``` cpp
-        int main(int argc, char** argv)
-        {
-            std::string IpLastSegment = "126";
-            int cam = 1;
-        ```
-    10. Build the SDK.
-        ``` bash
-        $ mkdir build
-        $ cd build
-        $ cmake ..
-        $ make
-        ```
-    11. Run the Image Receiver.
-        ``` bash
-        $ cd ..
-        $ ./bins/example_getimagetrans
-        ```
-1. Connect to a single camera.
-    1. Install GLUT.
-        ``` bash
-        sudo apt install freeglut3-dev
-        ```
-    2. Create a new workspace, clone the Camera SDK, and build.
-        ``` bash
-        $ mkdir ~/camera_sdk
-        $ cd ~/camera_sdk
-        $ git clone https://github.com/unitreerobotics/UnitreecameraSDK
-        $ cd UnitreecameraSDK
-        $ mkdir build
-        $ cd build
-        $ cmake ..
-        $ make
-        ```
-    4. Login to Main GO1 Controller.
-        ``` bash
-        $ ssh unitree@192.168.123.13
-        >>> 123
+2. Create a new workspace, clone the Camera SDK, and build.
+    ``` bash
+    $ mkdir ~/camera_sdk
+    $ cd ~/camera_sdk
+    $ git clone https://github.com/unitreerobotics/UnitreecameraSDK
+    $ cd UnitreecameraSDK
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
+    ```
+4. Login to Main GO1 Controller.
+    ``` bash
+    $ ssh unitree@192.168.123.13
+    >>> 123
 
-        $ cd Unitree/sdk/
-    3. Get Camera Raw Frame.
-        ``` bash
-        $ cd ~/camera_sdk/UnitreecameraSDK
-        ./bins/example_getRawFrame
-        ```
+    $ cd Unitree/sdk/
+3. Get Camera Raw Frame.
+    ``` bash
+    $ cd ~/camera_sdk/UnitreecameraSDK
+    ./bins/example_getRawFrame
+    ```
+
+#### Get Camera Data from Robot to VM - 1
+This is not working.
+
+Download the [Camera Manual](https://www.docs.quadruped.de/projects/go1/html/operation.html).
+
+1. Create an SDK Working Directory and install from GitHub.
+    ``` bash
+    $ mkdir ~/camera_sdk
+    $ cd ~/camera_sdk
+    $ git clone https://github.com/unitreerobotics/UnitreecameraSDK.git
+    ```
+2. Use SCP (Secure Copy Protocol) to transfer the camera sdk to the robot.
+    ``` bash
+    $ scp -r UnitreecameraSDK unitree@192.168.123.13:/home/unitree
+    123
+    ```
+3. SSH into the Robot.
+    ``` bash
+    $ ssh unitree@192.168.123.13
+    123
+    ```
+4. Stop the Head Camera Processes:
+    ``` bash
+    ps -aux | grep point_cloud_node | awk '{print $2}' | xargs kill -9
+    ps -aux | grep mqttControlNode | awk '{print $2}' | xargs kill -9
+    ```
+5. Modify `trans_rect_config.yaml`:
+    ``` bash
+    $ cd ~/UnitreecameraSDK
+    $ vim trans_rect_config.yaml
+    ```
+    1. Update the `IpLastSegment.data` Value:
+        - Original: `[ 15. ]`
+        - New: `[ 126. ]` # 13, 100, 255, 252
+    2. Update the `DeviceNode.data` Value:
+        - Original: `[ 0. ]`
+        - New: `[ 1. ]`
+6. Build the Camera SDK.
+    ``` bash
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
+    ```
+7. Run the Image Transmitter.
+    ``` bash
+    $ cd ..
+    $ ./bins/example_putImagetrans
+    ```
+8. Open a new Terminal, and go to the original camera SDK.
+    ``` bash
+    $ cd ~/camera_sdk/UnitreecameraSDK # on your machine
+    ```
+9. Edit the `example_getimagetrans.cc` File.
+    ``` bash
+    $ nano examples/example_getimagetrans.cc
+    ```
+    Update the start of the `main` function so it looks like this:
+    ``` cpp
+    int main(int argc, char** argv)
+    {
+        std::string IpLastSegment = "126";
+        int cam = 1;
+    ```
+10. Build the SDK.
+    ``` bash
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
+    ```
+11. Run the Image Receiver.
+    ``` bash
+    $ cd ..
+    $ ./bins/example_getimagetrans
+    ```
