@@ -3,18 +3,47 @@ Unitree GO1 Robot Connection + Control Project
 
 ## Table of Contents
 - [Contributors](#contributors)
-- [Connecting to GO1 Robot](#connecting-to-go1-robot)
+- [Creating an Ubuntu VM](#creating-an-ubuntu-vm)
+    - [Ubuntu 18.04 (AMD)](#ubuntu-1804-amd)
+    - [Ubuntu 20.04 (ARM)](#ubuntu-2004-arm)
+    - [Ubuntu 22.04 (ARM)](#ubuntu-2204-arm)
 
 ## Contributors
 This project was created by Shaun Altmann (shaun.altmann@deakin.edu.au).
 
+## Creating an Ubuntu VM
+### Ubuntu 18.04 (AMD)
+1. Install the [Ubuntu 18.04 AMD64 Desktop Image](https://releases.ubuntu.com/18.04/ubuntu-18.04.6-desktop-amd64.iso),
+    which can be found [here](https://releases.ubuntu.com/18.04/).
+2. Create the Ubuntu VM using the 18.04 image.
+3. Run the Ubuntu VM.
+
+### Ubuntu 20.04 (ARM)
+1. Install the [Ubuntu 20.04 64-bit ARM Server Image](https://cdimage.ubuntu.com/releases/focal/release/ubuntu-20.04.5-live-server-arm64.iso),
+    which can be found [here](https://cdimage.ubuntu.com/releases/focal/release/).
+2. Create the Ubuntu VM using the 20.04 image.
+3. Run the Ubuntu VM.
+4. Install Ubuntu Desktop on the Server.
+    ``` bash
+    $ sudo apt install ubuntu-desktop
+    $ sudo reboot
+    ```
+
+### Ubuntu 22.04 (ARM)
+1. Install the [Ubuntu 22.04 64-bit ARM Server Image](https://cdimage.ubuntu.com/releases/jammy/release/ubuntu-22.04.5-live-server-arm64.iso),
+    which can be found [here](https://cdimage.ubuntu.com/releases/jammy/release/).
+2. Create the Ubuntu VM using the 22.04 image.
+3. Run the Ubuntu VM.
+4. Install Ubuntu Desktop on the Server.
+    ``` bash
+    $ sudo apt install ubuntu-desktop
+    $ sudo reboot
+    ```
+
 ## Connecting to GO1 Robot
 The following steps will allow you to connect to the Unitree GO1 Robot:
 1. Create new Ubuntu 18.04 VM.
-    1. Install Ubuntu 18.04 Desktop Image from this
-        [link](https://releases.ubuntu.com/18.04/).
-    2. Create the Ubuntu VM with the 18.04 AMD image (ARM has not been tested).
-    3. Run the Ubuntu VM.
+    1. See [Ubuntu 18.04](#ubuntu-1804).
     4. Connect the Ubuntu VM to an internet connection.
         1. If at Deakin Uni, you can use the `Guest_WiFi_Deakin` network.
         2. Connecting to `eduroam`:
@@ -308,6 +337,83 @@ The following steps will allow you to connect to the Unitree GO1 Robot:
     ```
 
 ## Reading Camera Data
+1. Install Net Tools.
+    ``` bash
+    sudo apt install net-tools
+    ```
+1. Download the [Camera Manual](https://www.docs.quadruped.de/projects/go1/html/operation.html).
+2. Get the Head Camera working:
+    1. Create an SDK Working Directory and install from GitHub.
+        ``` bash
+        $ mkdir ~/camera_sdk
+        $ cd ~/camera_sdk
+        $ git clone https://github.com/unitreerobotics/UnitreecameraSDK.git
+        ```
+    2. Use SCP (Secure Copy Protocol) to transfer the camera sdk to the robot.
+        ``` bash
+        $ scp -r UnitreecameraSDK unitree@192.168.123.13:/home/unitree
+        123
+        ```
+    3. SSH into the Robot.
+        ``` bash
+        $ ssh unitree@192.168.123.13
+        123
+        ```
+    4. Stop the Head Camera Processes:
+        ``` bash
+        ps -aux | grep point_cloud_node | awk '{print $2}' | xargs kill -9
+        ps -aux | grep mqttControlNode | awk '{print $2}' | xargs kill -9
+        ```
+    5. Modify `trans_rect_config.yaml`:
+        ``` bash
+        $ cd ~/UnitreecameraSDK
+        $ vim trans_rect_config.yaml
+        ```
+        1. Update the `IpLastSegment.data` Value:
+            - Original: `[ 15. ]`
+            - New: `[ 126. ]` # 13, 100, 255, 252
+        2. Update the `DeviceNode.data` Value:
+            - Original: `[ 0. ]`
+            - New: `[ 1. ]`
+    6. Build the Camera SDK.
+        ``` bash
+        $ mkdir build
+        $ cd build
+        $ cmake ..
+        $ make
+        ```
+    7. Run the Image Transmitter.
+        ``` bash
+        $ cd ..
+        $ ./bins/example_putImagetrans
+        ```
+    8. Open a new Terminal, and go to the original camera SDK.
+        ``` bash
+        $ cd ~/camera_sdk/UnitreecameraSDK # on your machine
+        ```
+    9. Edit the `example_getimagetrans.cc` File.
+        ``` bash
+        $ nano examples/example_getimagetrans.cc
+        ```
+        Update the start of the `main` function so it looks like this:
+        ``` cpp
+        int main(int argc, char** argv)
+        {
+            std::string IpLastSegment = "126";
+            int cam = 1;
+        ```
+    10. Build the SDK.
+        ``` bash
+        $ mkdir build
+        $ cd build
+        $ cmake ..
+        $ make
+        ```
+    11. Run the Image Receiver.
+        ``` bash
+        $ cd ..
+        $ ./bins/example_getimagetrans
+        ```
 1. Connect to a single camera.
     1. Install GLUT.
         ``` bash
