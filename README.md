@@ -668,3 +668,151 @@ Download the [Camera Manual](https://www.docs.quadruped.de/projects/go1/html/ope
     $ cd ..
     $ ./bins/example_getimagetrans
     ```
+
+#### Camera Data Transmission - YouTube
+Following the tutorial in this [Camera Tutorial](https://www.youtube.com/watch?v=nafv21HeeEM).
+
+1. SSH into the Robot.
+    ``` bash
+    $ ssh unitree@192.168.123.13 # ip of the head camera
+    123 # password
+    ```
+2. Go to the `UnitreecameraSDK` and remove the original version.
+    ``` bash
+    $ cd Unitree/sdk
+    $ rm -rf UnitreecameraSDK
+    $ exit
+    ```
+3. Use SCP to copy the `UnitreecameraSDK` git repository into where the
+    original version was stored.
+    ``` bash
+    $ mkdir ~/camera_sdk
+    $ cd ~/camera_sdk
+    $ git clone https://github.com/unitreerobotics/UnitreecameraSDK.git
+    $ scp -r UnitreecameraSDK unitree@192.168.123.13:/home/unitree/Unitree/sdk
+    123
+    ```
+4. Get the IP address of the machine receiving the camera data. (This machine
+    should be connected to the WiFi of the robot, meaning if you are using a
+    VM you will need to use a WiFi bridged adapter instead of the normal shared
+    network).
+    ``` bash
+    $ ifconfig
+    ...
+        inet 192.168.123.xxx # you need to find the `xxx`
+    ```
+5. SSH into the Robot.
+    ``` bash
+    $ ssh unitree@192.168.123.13
+    123
+    ```
+6. Edit the `trans_rect_config.yaml` in the UnitreecameraSDK Directory.
+    ``` bash
+    $ cd ~/Unitree/sdk/UnitreecameraSDK
+    $ vim trans_rect_config.yaml
+    ```
+7. Change the `IpLastSegment.data` value to whatever `xxx` was from the
+    `ifconfig` command.
+8. Re-Create and Redirect into the `build` directory.
+    ``` bash
+    $ rm -rf build
+    $ mkdir build
+    $ cd build
+    ```
+9. Make the Repository.
+    ``` bash
+    $ cmake ..
+    $ make
+    ```
+10. Run the example image transmitter.
+    ``` bash
+    $ cd ..
+    $ ./bins/example_putImagetrans
+    ```
+    - If you run into any issues, try using the following commands:
+        ``` bash
+        $ ps -aux | grep point_cloud_node | awk '{print $2}' | xargs kill -9
+        $ ps -aux | grep mqttControlNode | awk '{print $2}' | xargs kill -9
+        ```
+    - If that doesn't work, restart the head camera controller. This will force
+        you to quit the SSH session, so you will then need to log back in.
+        ``` bash
+        $ sudo reboot
+        ```
+11. Open a new terminal, and go to the original camera sdk.
+    ``` bash
+    $ cd ~/camera_sdk/UnitreecameraSDK/
+    ```
+12. Edit the `example_getimagetrans.cc` File.
+    ``` bash
+    $ nano examples/example_getimagetrans.cc
+    ```
+    Update the start of the `main` function so it looks like this:
+    ``` cpp
+    int main(int argc, char** argv)
+    {
+        std::string IpLastSegment = "xxx"; // equal to `xxx` from `ifconfig`
+        int cam = 1;
+    ```
+12. Re-Create and Redirect into the `build` directory.
+    ``` bash
+    $ rm -rf build
+    $ mkdir build
+    $ cd build
+    ```
+13. Make the Repository.
+    ``` bash
+    $ cmake ..
+    $ make
+    ```
+14. Run the example image receiver.
+    ``` bash
+    $ ./bins/example_getimagetrans
+    ```
+
+#### Camera Data Transmission - From Main Controller
+1. Delete `UnitreecameraSDK` from main controller if there.
+    ``` bash
+    $ ssh pi@192.168.12.1 # wifi connection
+    123
+    $ cd Unitree/sdk
+    $ ls -a # check if UnitreecameraSDK is there
+    $ rm -rf UnitreecameraSDK # if required
+    $ exit
+    ```
+2. Create new `camera_sdk` workspace and upload new `UnitreecameraSDK`.
+    ``` bash
+    $ rm -rf ~/camera_sdk
+    $ mkdir ~/camera_sdk
+    $ cd ~/camera_sdk
+    $ git clone https://github.com/unitreerobotics/UnitreecameraSDK.git
+    $ scp -r UnitreecameraSDK pi@192.168.12.1:/home/pi/Unitree/sdk
+    123
+3. Open new terminal and get IP of current machine.
+    ``` bash
+    $ ifconfig
+    ...
+        192.168.12.XXX # want to know this
+    ```
+4. Edit `trans_rect_config.yaml` in Robot's Camera SDK.
+    ``` bash
+    $ ssh pi@192.168.12.1
+    123
+    $ cd Unitree/sdk/UnitreecameraSDK
+    $ nano trans_rect_config.yaml
+    >>> IpLastSegment.data = XXX # from `ifconfig`
+    >>> DeviceNode.data = 1
+    ```
+5. Build Package.
+    ``` bash
+    $ rm -rf build
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
+    $ cd ..
+    ```
+6. Run Image Transmitter.
+    ``` bash
+    $ ./bins/example_putImagetrans
+    ```

@@ -1,2 +1,5 @@
 # pyenv virtual environment setup file
 .python-version
+
+# notes file
+.dont-save
