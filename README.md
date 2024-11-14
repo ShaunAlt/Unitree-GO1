@@ -559,6 +559,10 @@ colours:
     ```
 
 ### Controlling Cameras
+> [!NOTE]
+> This section currently contains a lot of guess-work. I have not yet managed
+> to get the camera control working, and as such this section contains a list
+> of different things I have tried.
 #### Getting Raw Camera Data
 This is not working.
 1. Install GLUT.
