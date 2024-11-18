@@ -816,3 +816,21 @@ Following the tutorial in this [Camera Tutorial](https://www.youtube.com/watch?v
     ``` bash
     $ ./bins/example_putImagetrans
     ```
+
+#### Another Test
+1. Wireless connect to GO1 robot.
+2. Get IP of VM.
+    ``` bash
+    $ ifconfig
+    ```
+3. Alter Jetson config.
+    ``` bash
+    $ ssh unitree@192.168.123.13
+    123
+    $ cd ~/Unitree/autostart/imageai/mLComSystemFrame/config/
+    $ vim mqMNConfig.yaml
+    >>> alter `udpHost` value to `192.168.12.XXX` # was 192.168.12.10
+
+#### Test
+Tutorial [here](https://docs.trossenrobotics.com/unitree_go1_docs/getting_started/camera_sdk.html).
+1. 
