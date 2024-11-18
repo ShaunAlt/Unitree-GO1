@@ -8,6 +8,11 @@ Created by: Shaun Altmann
 - [Security Camera](#security-camera)
     - [Unboxing the Security Camera](#unboxing-the-security-camera)
     - [Connecting the Camera to the Router](#connecting-the-camera-to-the-router)
+    - [Checking Camera IP Address](#checking-camera-ip-address)
+    - [Checking Camera Username + Resetting Password](#checking-camera-username--resetting-password)
+    - [Stream Camera Data on Ubuntu VM](#stream-camera-data-on-ubuntu-vm)
+    - [Stream Camera Data with ROS2 Iron](#stream-camera-data-with-ros2-iron)
+
 
 ## Router
 ### Router Unboxing
@@ -102,49 +107,6 @@ TODO.
     $ export CAMERA_RTSP="rtsp://$CAMERA_UID:$CAMERA_PWD@$CAMERA_IP:554/h264Preview_01_main"
     $ ffmpeg -i $CAMERA_RTSP -f sdl "Camera Stream"
 
-### Stream Camera Data with ROS Iron
-1. Open Ubuntu 22.04 VM.
-2. Connect VM to the internet.
-3. Source ROS Iron.
-    ``` bash
-    $ source_ros2 # source /opt/ros/iron/setup.sh
-    ```
-4. Install ROS Packages.
-    ``` bash
-    $ sudo apt install ros-iron-image-transport
-    $ sudo apt install ros-iron-cv-bridge
-    ```
-5. Since `ros-iron-video-stream-opencv` is not yet released for Iron, you will need to build from source.
-    1. Create a new Camera WiFi Workspace.
-        ``` bash
-        $ mkdir ~/camera_wifi_ws/src
-        $ cd ~/camera_wifi_ws/src
-        ```
-    2. Clone the GitHub Repository.
-        ``` bash
-        $ git clone https://github.com/ros-drivers/video_stream_opencv.git
-        ```
-    3. Build the workspace.
-        ``` bash
-        $ cd ~/camera_wifi_ws
-        $ colcon build
-        ```
-4. Connect VM to router network.
-5. Identify camera IP, username, and password.
-    ``` bash
-    $ export CAMERA_UID="admin" # store camera uid
-    $ export CAMERA_PWD="Camera1!" # store camera pwd
-    $ export CAMERA_IP="192.168.0.60" # store camera ip
-    ```
-6. Ping camera to test connection.
-    ``` bash
-    ping $CAMERA_IP -c 3
-    ```
-7. Create RTSP Connection String.
-    ``` bash
-    $ export CAMERA_RTSP="rtsp://$CAMERA_UID:$CAMERA_PWD@$CAMERA_IP:554/h264Preview_01_main"
-    ```
-
 ### Stream Camera Data with ROS2 Iron
 1. Open Ubuntu 22.04 VM with ROS2 Iron installed.
 2. Source ROS2:
@@ -177,3 +139,65 @@ TODO.
         ``` bash
         $ cd ~/camera_opencv_ws/src/ros2_opencv/ros2_opencv
         ```
+    2. Create a file called `cameraPublisher.py`, and fill it with the code from this [cameraPublisher.py](files/cameraPublisher.py) file.
+    3. Create a file called `subscriberImage.py`, and fill it with the code from this [subscriberImage.py](files/subscriberImage.py) file.
+    4. Make the files executable.
+        ``` bash
+        $ chmod +x cameraPublisher.py
+        $ chmod +x subscriberImage.py
+        ```
+    5. Go to the package base.
+        ``` bash
+        $ cd ~/camera_opencv_ws/src/ros2_opencv
+        ```
+    6. Edit `setup.py` so that it looks like this:
+        ``` python
+        ...
+        setup(
+            ...
+            entry_points = {
+                'console_scripts': [
+                    'publisher_node=ros2_opencv.cameraPublisher:main',
+                    'subscriber_node=ros2_opencv.subscriberImage:main',
+                ],
+            },
+            ...
+        )
+        ```
+    7. Install ROS dependencies.
+        ``` bash
+        $ cd ~/camera_opencv_ws
+        $ rosdep install -i --from-paths src --rosdistro iron
+        ```
+    8. Build the workspace.
+        ``` bash
+        $ colcon build
+        ```
+9. Source the workspace.
+    ``` bash
+    $ cd ~/camera_opencv_ws
+    $ source install/setup.bash # source_ws2
+    ```
+10. Create the camera stream environment variables.
+    ``` bash
+    $ export CAMERA_UID="admin" # store camera uid
+    $ export CAMERA_PWD="Camera1!" # store camera pwd
+    $ export CAMERA_IP="192.168.0.60" # store camera ip
+    $ export CAMERA_RTSP="rtsp://$CAMERA_UID:$CAMERA_PWD@$CAMERA_IP:554/h264Preview_01_main"
+    ```
+11. Run the image publisher.
+    ``` bash
+    $ ros2 run ros2_opencv publisher_node
+    ```
+12. Open a new terminal, source the workspace, and run the subscriber.
+    ``` bash
+    $ cd ~/camera_opencv_ws
+    $ source install/setup.bash # source_ws2
+    $ ros2 run ros2_opencv subscriber_node
+    ```
+13. View the camera topic.
+    ``` bash
+    $ ros2 topic list # list all topics
+    $ ros2 topic info /camera_image # get information about the topic
+    $ ros2 topic echo /camera_image # stream topic data
+    ```
