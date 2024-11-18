@@ -101,3 +101,79 @@ TODO.
     $ export CAMERA_IP="192.168.0.60" # store camera ip
     $ export CAMERA_RTSP="rtsp://$CAMERA_UID:$CAMERA_PWD@$CAMERA_IP:554/h264Preview_01_main"
     $ ffmpeg -i $CAMERA_RTSP -f sdl "Camera Stream"
+
+### Stream Camera Data with ROS Iron
+1. Open Ubuntu 22.04 VM.
+2. Connect VM to the internet.
+3. Source ROS Iron.
+    ``` bash
+    $ source_ros2 # source /opt/ros/iron/setup.sh
+    ```
+4. Install ROS Packages.
+    ``` bash
+    $ sudo apt install ros-iron-image-transport
+    $ sudo apt install ros-iron-cv-bridge
+    ```
+5. Since `ros-iron-video-stream-opencv` is not yet released for Iron, you will need to build from source.
+    1. Create a new Camera WiFi Workspace.
+        ``` bash
+        $ mkdir ~/camera_wifi_ws/src
+        $ cd ~/camera_wifi_ws/src
+        ```
+    2. Clone the GitHub Repository.
+        ``` bash
+        $ git clone https://github.com/ros-drivers/video_stream_opencv.git
+        ```
+    3. Build the workspace.
+        ``` bash
+        $ cd ~/camera_wifi_ws
+        $ colcon build
+        ```
+4. Connect VM to router network.
+5. Identify camera IP, username, and password.
+    ``` bash
+    $ export CAMERA_UID="admin" # store camera uid
+    $ export CAMERA_PWD="Camera1!" # store camera pwd
+    $ export CAMERA_IP="192.168.0.60" # store camera ip
+    ```
+6. Ping camera to test connection.
+    ``` bash
+    ping $CAMERA_IP -c 3
+    ```
+7. Create RTSP Connection String.
+    ``` bash
+    $ export CAMERA_RTSP="rtsp://$CAMERA_UID:$CAMERA_PWD@$CAMERA_IP:554/h264Preview_01_main"
+    ```
+
+### Stream Camera Data with ROS2 Iron
+1. Open Ubuntu 22.04 VM with ROS2 Iron installed.
+2. Source ROS2:
+    ``` bash
+    $ source /opt/ros/iron/setup.sh # source_ros2
+    ```
+3. Install OpenCV:
+    ``` bash
+    $ sudo apt install libopencv-dev python3-opencv
+    ```
+4. Check dependencies (if any of these are not installed, install them):
+    ``` bash
+    $ ros2 pkg prefix rclpy
+    $ ros2 pkg prefix image_transport
+    $ ros2 pkg prefix cv_bridge
+    $ ros2 pkg prefix sensor_msgs
+    $ ros2 pkg prefix std_msgs
+    ```
+5. Create ROS2 Workspace for OpenCV Camera Streaming.
+    ``` bash
+    $ mkdir ~/camera_opencv_ws/src -p
+    $ cd ~/camera_opencv_ws/src
+    ```
+6. Create ROS2 Package for streaming video data.
+    ``` bash
+    $ ros2 pkg create --build-type ament_python ros2_opencv --dependencies sensor_msgs std_msgs rclpy image_transport cv_bridge python3-opencv
+    ```
+7. Create Publisher and Subscriber Nodes for Package.
+    1. Go to package source.
+        ``` bash
+        $ cd ~/camera_opencv_ws/src/ros2_opencv/ros2_opencv
+        ```
